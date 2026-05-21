@@ -1,0 +1,489 @@
+    @page "/items"
+@page "/"
+@inject IWarehouseService Service
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@implements IAsyncDisposable
+
+<PageTitle>Список техники</PageTitle>
+
+<div class="page-header">
+    <h1>Список позиций</h1>
+    <button class="btn btn-primary" @onclick="StartCreate">
+        <i class="fas fa-plus"></i> Добавить позицию
+    </button>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="filters-bar">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Поиск по типу, производителю, модели..."
+                       value="@searchQuery" @oninput="OnSearchChanged" />
+            </div>
+            <div class="filter-group">
+                <label>Производитель</label>
+                <select value="@filterSupplierId" @onchange="OnSupplierFilterChanged">
+                    <option value="">Все производители</option>
+                    @foreach (var s in availableSuppliers)
+                    {
+                        <option value="@s.Id">@s.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Тип техники</label>
+                <select value="@filterTypeId" @onchange="OnTypeFilterChanged">
+                    <option value="">Все типы</option>
+                    @foreach (var t in availableTypes)
+                    {
+                        <option value="@t.Id">@t.Name</option>
+                    }
+                </select>
+            </div>
+            <div class="filter-group">
+                <label>Цена</label>
+                <div class="price-range">
+                    <input type="number" placeholder="от" value="@priceFrom" @oninput="OnPriceFromChanged" />
+                    <span>&mdash;</span>
+                    <input type="number" placeholder="до" value="@priceTo" @oninput="OnPriceToChanged" />
+                </div>
+            </div>
+            <button class="btn btn-outline btn-sm" @onclick="ClearFilters">
+                <i class="fas fa-times"></i> Сбросить
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        @if (filteredItems == null || !filteredItems.Any())
+        {
+            <div class="empty-state">
+                <i class="fas fa-box-open"></i>
+                <p>Нет позиций</p>
+            </div>
+        }
+        else
+        {
+            <div style="overflow-x:auto">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width:60px">Фото</th>
+                            <th>Тип</th>
+                            <th>Производитель</th>
+                            <th>Модель</th>
+                            <th>Страна</th>
+                            <th>Цена</th>
+                            <th>Дата создания</th>
+                            <th>Дата обновления</th>
+                            <th style="width:80px">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in filteredItems)
+                        {
+                            <tr>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(item.PhotoUrl))
+                                    {
+                                        <img class="product-photo" src="@item.PhotoUrl" alt="@item.Model" />
+                                    }
+                                    else
+                                    {
+                                        <div class="product-photo-placeholder">
+                                            <i class="fas fa-camera"></i>
+                                        </div>
+                                    }
+                                </td>
+                                <td><span class="badge badge-type">@item.Type.Name</span></td>
+                                <td><span class="badge badge-supplier">@item.Supplier.Name</span></td>
+                                <td><strong>@item.Model</strong></td>
+                                <td class="text-muted">@item.Country.Name</td>
+                                <td><strong>@item.Price.ToString("N2")</strong> ₽</td>
+                                <td class="text-muted">@item.CreationDate.ToString("dd.MM.yyyy")</td>
+                                <td class="text-muted">@item.LastUpdateDate.ToString("dd.MM.yyyy")</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" title="Редактировать" @onclick="() => StartEdit(item)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon danger" title="Удалить" @onclick="() => ConfirmDelete(item)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+@if (showModal)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal" @onclick:stopPropagation>
+            <div class="modal-header">
+                <h2>@(editingItemId.HasValue ? "Редактировать позицию" : "Добавить позицию")</h2>
+                <button class="modal-close" @onclick="CloseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Тип техники</label>
+                        <select class="form-control" @bind="formTypeId">
+                            <option value="">Выберите тип</option>
+                            @foreach (var t in allTypes)
+                            {
+                                <option value="@t.Id">@t.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Производитель</label>
+                        <select class="form-control" @bind="formSupplierId">
+                            <option value="">Выберите производителя</option>
+                            @foreach (var s in allSuppliers)
+                            {
+                                <option value="@s.Id">@s.Name</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Модель</label>
+                        <input class="form-control" @bind="formModel" placeholder="Введите модель" />
+                    </div>
+                    <div class="form-group">
+                        <label>Цена</label>
+                        <input class="form-control" type="number" step="0.01" @bind="formPrice" placeholder="0.00" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Фотография (URL)</label>
+                    <input class="form-control" @bind="formPhotoUrl" placeholder="https://example.com/photo.jpg" />
+                </div>
+                <div class="form-group">
+                    <label>Страна поставки</label>
+                    <div style="display:flex;gap:8px">
+                        <select class="form-control" @bind="formCountryId" style="flex:1">
+                            <option value="">Выберите страну</option>
+                            @foreach (var c in allCountries)
+                            {
+                                <option value="@c.Id">@c.Name</option>
+                            }
+                        </select>
+                        <button class="btn btn-outline" title="Добавить страну" @onclick="StartAddCountry" type="button">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                @if (showAddCountry)
+                {
+                    <div class="form-group" style="padding:12px;background:#f8fafc;border-radius:8px">
+                        <label>Новая страна</label>
+                        <div style="display:flex;gap:8px">
+                            <input class="form-control" @bind="newCountryName" placeholder="Введите название страны"
+                                   @onkeydown="HandleKeyDown" />
+                            <button class="btn btn-success btn-sm" @onclick="AddCountry" disabled="@string.IsNullOrWhiteSpace(newCountryName)">
+                                <i class="fas fa-check"></i>
+                            </button>
+                            <button class="btn btn-outline btn-sm" @onclick="CancelAddCountry">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                }
+                <div class="form-actions">
+                    <button class="btn btn-outline" @onclick="CloseModal">Отмена</button>
+                    <button class="btn btn-primary" @onclick="SaveItem" disabled="@(!IsFormValid)">
+                        <i class="fas fa-save"></i> Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showDeleteConfirm)
+{
+    <div class="modal-overlay" @onclick="CancelDelete">
+        <div class="modal" style="max-width:400px" @onclick:stopPropagation>
+            <div class="modal-header">
+                <h2>Подтверждение удаления</h2>
+                <button class="modal-close" @onclick="CancelDelete">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить <strong>@deletingItemName</strong>?</p>
+                <div class="form-actions">
+                    <button class="btn btn-outline" @onclick="CancelDelete">Отмена</button>
+                    <button class="btn btn-danger" @onclick="ExecuteDelete">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<WareHouseItemDTO> allItems = new();
+    private List<WareHouseItemDTO> filteredItems = new();
+    private List<RefItem> allTypes = new();
+    private List<RefItem> allSuppliers = new();
+    private List<RefItem> allCountries = new();
+    private List<RefItem> availableTypes = new();
+    private List<RefItem> availableSuppliers = new();
+
+    private string searchQuery = "";
+    private string filterSupplierId = "";
+    private string filterTypeId = "";
+    private string priceFrom = "";
+    private string priceTo = "";
+
+    private bool showModal;
+    private bool showDeleteConfirm;
+    private bool showAddCountry;
+    private Guid? editingItemId;
+    private string formModel = "";
+    private decimal formPrice;
+    private string formPhotoUrl = "";
+    private Guid formTypeId;
+    private Guid formSupplierId;
+    private Guid formCountryId;
+    private string newCountryName = "";
+    private string deletingItemName = "";
+    private Guid deletingItemId;
+
+    private Timer? searchDebounce;
+
+    bool IsFormValid =>
+        !string.IsNullOrWhiteSpace(formModel) &&
+        formTypeId != Guid.Empty &&
+        formSupplierId != Guid.Empty &&
+        formCountryId != Guid.Empty &&
+        formPrice >= 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        try
+        {
+            allItems = await Service.GetAllAsync();
+            allTypes = await Http.GetFromJsonAsync<List<RefItem>>(Navigation.BaseUri + "api/references/types") ?? new();
+            allSuppliers = await Http.GetFromJsonAsync<List<RefItem>>(Navigation.BaseUri + "api/references/suppliers") ?? new();
+            allCountries = await Http.GetFromJsonAsync<List<RefItem>>(Navigation.BaseUri + "api/references/countries") ?? new();
+        }
+        catch
+        {
+            allItems = new();
+            allTypes = new();
+            allSuppliers = new();
+            allCountries = new();
+        }
+        availableTypes = new List<RefItem>(allTypes);
+        availableSuppliers = new List<RefItem>(allSuppliers);
+        ApplyFilters();
+    }
+
+    void ApplyFilters()
+    {
+        var query = searchQuery?.Trim().ToLower() ?? "";
+        var supId = string.IsNullOrEmpty(filterSupplierId) ? (Guid?)null : Guid.Parse(filterSupplierId);
+        var typId = string.IsNullOrEmpty(filterTypeId) ? (Guid?)null : Guid.Parse(filterTypeId);
+        decimal? fromP = decimal.TryParse(priceFrom?.Replace('.', ','), out var f) ? f : null;
+        decimal? toP = decimal.TryParse(priceTo?.Replace('.', ','), out var t) ? t : null;
+
+        filteredItems = allItems.Where(item =>
+        {
+            if (supId.HasValue && item.Supplier.Id != supId.Value) return false;
+            if (typId.HasValue && item.Type.Id != typId.Value) return false;
+            if (fromP.HasValue && item.Price < fromP.Value) return false;
+            if (toP.HasValue && item.Price > toP.Value) return false;
+            if (!string.IsNullOrEmpty(query))
+            {
+                if (!item.Type.Name.ToLower().Contains(query) &&
+                    !item.Supplier.Name.ToLower().Contains(query) &&
+                    !item.Model.ToLower().Contains(query))
+                    return false;
+            }
+            return true;
+        }).ToList();
+
+        var typeIds = supId.HasValue
+            ? allItems.Where(i => i.Supplier.Id == supId.Value).Select(i => i.Type.Id).Distinct().ToHashSet()
+            : allItems.Select(i => i.Type.Id).Distinct().ToHashSet();
+        var supplierIds = typId.HasValue
+            ? allItems.Where(i => i.Type.Id == typId.Value).Select(i => i.Supplier.Id).Distinct().ToHashSet()
+            : allItems.Select(i => i.Supplier.Id).Distinct().ToHashSet();
+
+        availableTypes = allTypes.Where(t => typeIds.Contains(t.Id)).ToList();
+        availableSuppliers = allSuppliers.Where(s => supplierIds.Contains(s.Id)).ToList();
+    }
+
+    async Task OnSearchChanged(ChangeEventArgs e)
+    {
+        searchQuery = e.Value?.ToString() ?? "";
+        searchDebounce?.Dispose();
+        searchDebounce = new Timer(async _ =>
+        {
+            await InvokeAsync(() => { ApplyFilters(); StateHasChanged(); });
+        }, null, 300, Timeout.Infinite);
+    }
+
+    async Task OnSupplierFilterChanged(ChangeEventArgs e)
+    {
+        filterSupplierId = e.Value?.ToString() ?? "";
+        ApplyFilters();
+    }
+
+    async Task OnTypeFilterChanged(ChangeEventArgs e)
+    {
+        filterTypeId = e.Value?.ToString() ?? "";
+        ApplyFilters();
+    }
+
+    async Task OnPriceFromChanged(ChangeEventArgs e)
+    {
+        priceFrom = e.Value?.ToString() ?? "";
+        ApplyFilters();
+    }
+
+    async Task OnPriceToChanged(ChangeEventArgs e)
+    {
+        priceTo = e.Value?.ToString() ?? "";
+        ApplyFilters();
+    }
+
+    async Task ClearFilters()
+    {
+        searchQuery = "";
+        filterSupplierId = "";
+        filterTypeId = "";
+        priceFrom = "";
+        priceTo = "";
+        ApplyFilters();
+    }
+
+    async Task StartCreate()
+    {
+        editingItemId = null;
+        formModel = "";
+        formPrice = 0;
+        formPhotoUrl = "";
+        formTypeId = Guid.Empty;
+        formSupplierId = Guid.Empty;
+        formCountryId = Guid.Empty;
+        newCountryName = "";
+        showAddCountry = false;
+        showModal = true;
+    }
+
+    async Task StartEdit(WareHouseItemDTO item)
+    {
+        editingItemId = item.Id;
+        formModel = item.Model;
+        formPrice = item.Price;
+        formPhotoUrl = item.PhotoUrl;
+        formTypeId = item.Type.Id;
+        formSupplierId = item.Supplier.Id;
+        formCountryId = item.Country.Id;
+        newCountryName = "";
+        showAddCountry = false;
+        showModal = true;
+    }
+
+    async Task SaveItem()
+    {
+        var countryName = allCountries.FirstOrDefault(c => c.Id == formCountryId)?.Name ?? "";
+        var dto = new CreateUpdateItemDto
+        {
+            Id = editingItemId,
+            Model = formModel.Trim(),
+            Price = formPrice,
+            PhotoUrl = formPhotoUrl?.Trim() ?? "",
+            TypeId = formTypeId,
+            SupplierId = formSupplierId,
+            CountryName = countryName
+        };
+        await Service.SaveAsync(dto);
+        showModal = false;
+        await LoadData();
+    }
+
+    void CloseModal() => showModal = false;
+
+    void StartAddCountry()
+    {
+        newCountryName = "";
+        showAddCountry = true;
+    }
+
+    async Task AddCountry()
+    {
+        if (string.IsNullOrWhiteSpace(newCountryName)) return;
+        var existing = allCountries.FirstOrDefault(c =>
+            c.Name.Equals(newCountryName.Trim(), StringComparison.OrdinalIgnoreCase));
+        if (existing != null)
+        {
+            formCountryId = existing.Id;
+        }
+        else
+        {
+            var newCountry = new RefItem { Id = Guid.NewGuid(), Name = newCountryName.Trim() };
+            allCountries.Add(newCountry);
+            formCountryId = newCountry.Id;
+        }
+        showAddCountry = false;
+        newCountryName = "";
+    }
+
+    void CancelAddCountry()
+    {
+        showAddCountry = false;
+        newCountryName = "";
+    }
+
+    async void HandleKeyDown(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") await AddCountry();
+    }
+
+    void ConfirmDelete(WareHouseItemDTO item)
+    {
+        deletingItemId = item.Id;
+        deletingItemName = $"{item.Type.Name} {item.Model}";
+        showDeleteConfirm = true;
+    }
+
+    void CancelDelete() => showDeleteConfirm = false;
+
+    async Task ExecuteDelete()
+    {
+        await Service.DeleteAsync(deletingItemId);
+        showDeleteConfirm = false;
+        await LoadData();
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        searchDebounce?.Dispose();
+    }
+
+    class RefItem
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = "";
+    }
+}

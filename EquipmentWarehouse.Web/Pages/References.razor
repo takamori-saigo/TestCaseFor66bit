@@ -1,0 +1,283 @@
+@page "/references"
+@inject HttpClient Http
+@inject NavigationManager Navigation
+
+<PageTitle>Справочники</PageTitle>
+
+<div class="page-header">
+    <h1>Справочники</h1>
+</div>
+
+<div class="reference-tabs">
+    <button class="reference-tab @(activeTab == "types" ? "active" : "")" @onclick="ShowTypesTab">
+        <i class="fas fa-microchip"></i> Типы техники
+    </button>
+    <button class="reference-tab @(activeTab == "suppliers" ? "active" : "")" @onclick="ShowSuppliersTab">
+        <i class="fas fa-truck"></i> Производители
+    </button>
+</div>
+
+@if (activeTab == "types")
+{
+    <div class="card">
+        <div class="card-header">
+            <span>Типы техники</span>
+            <button class="btn btn-primary btn-sm" @onclick="() => StartCreate(true)">
+                <i class="fas fa-plus"></i> Добавить
+            </button>
+        </div>
+        <div class="card-body">
+            @if (types == null || !types.Any())
+            {
+                <div class="empty-state">
+                    <i class="fas fa-microchip"></i>
+                    <p>Нет типов техники</p>
+                </div>
+            }
+            else
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Наименование</th>
+                            <th>Описание</th>
+                            <th>Дата создания</th>
+                            <th>Дата обновления</th>
+                            <th style="width:100px">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var t in types)
+                        {
+                            <tr>
+                                <td><strong>@t.Name</strong></td>
+                                <td class="text-muted">@t.Description</td>
+                                <td class="text-muted">@FormatDate(t.CreatedDate)</td>
+                                <td class="text-muted">@FormatDate(t.ModifiedDate)</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" title="Редактировать" @onclick="() => StartEdit(true, t)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon danger" title="Удалить" @onclick="() => ConfirmDelete(true, t)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="card">
+        <div class="card-header">
+            <span>Производители</span>
+            <button class="btn btn-primary btn-sm" @onclick="() => StartCreate(false)">
+                <i class="fas fa-plus"></i> Добавить
+            </button>
+        </div>
+        <div class="card-body">
+            @if (suppliers == null || !suppliers.Any())
+            {
+                <div class="empty-state">
+                    <i class="fas fa-truck"></i>
+                    <p>Нет производителей</p>
+                </div>
+            }
+            else
+            {
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Наименование</th>
+                            <th>Описание</th>
+                            <th>Дата создания</th>
+                            <th>Дата обновления</th>
+                            <th style="width:100px">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in suppliers)
+                        {
+                            <tr>
+                                <td><strong>@s.Name</strong></td>
+                                <td class="text-muted">@s.Description</td>
+                                <td class="text-muted">@FormatDate(s.CreatedDate)</td>
+                                <td class="text-muted">@FormatDate(s.ModifiedDate)</td>
+                                <td>
+                                    <div class="table-actions">
+                                        <button class="btn-icon" title="Редактировать" @onclick="() => StartEdit(false, s)">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="btn-icon danger" title="Удалить" @onclick="() => ConfirmDelete(false, s)">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+}
+
+@if (showModal)
+{
+    <div class="modal-overlay" @onclick="CloseModal">
+        <div class="modal" @onclick:stopPropagation>
+            <div class="modal-header">
+                <h2>@(editingId.HasValue ? "Редактировать" : "Добавить") @(isTypeTab ? "тип" : "производителя")</h2>
+                <button class="modal-close" @onclick="CloseModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Наименование</label>
+                    <input class="form-control" @bind="formName" placeholder="Введите наименование" />
+                </div>
+                <div class="form-group">
+                    <label>Описание</label>
+                    <textarea class="form-control" @bind="formDescription" rows="3" placeholder="Введите описание"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-outline" @onclick="CloseModal">Отмена</button>
+                    <button class="btn btn-primary" @onclick="SaveEntity" disabled="@string.IsNullOrWhiteSpace(formName)">
+                        <i class="fas fa-save"></i> Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@if (showDeleteConfirm)
+{
+    <div class="modal-overlay" @onclick="CancelDelete">
+        <div class="modal" style="max-width:400px" @onclick:stopPropagation>
+            <div class="modal-header">
+                <h2>Подтверждение удаления</h2>
+                <button class="modal-close" @onclick="CancelDelete">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Вы уверены, что хотите удалить <strong>@deletingName</strong>?</p>
+                <div class="form-actions">
+                    <button class="btn btn-outline" @onclick="CancelDelete">Отмена</button>
+                    <button class="btn btn-danger" @onclick="ExecuteDelete">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private string activeTab = "types";
+    private List<ReferenceItem> types = new();
+    private List<ReferenceItem> suppliers = new();
+
+    private bool showModal;
+    private bool showDeleteConfirm;
+    private bool isTypeTab;
+    private Guid? editingId;
+    private string formName = "";
+    private string? formDescription;
+    private Guid deletingId;
+    private string deletingName = "";
+    private bool deletingIsType;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+
+    async Task LoadData()
+    {
+        try
+        {
+            types = await Http.GetFromJsonAsync<List<ReferenceItem>>(Navigation.BaseUri + "api/references/types") ?? new();
+            suppliers = await Http.GetFromJsonAsync<List<ReferenceItem>>(Navigation.BaseUri + "api/references/suppliers") ?? new();
+        }
+        catch
+        {
+            types = new();
+            suppliers = new();
+        }
+    }
+
+    void ShowTypesTab() => activeTab = "types";
+    void ShowSuppliersTab() => activeTab = "suppliers";
+
+    void StartCreate(bool isType)
+    {
+        isTypeTab = isType;
+        editingId = null;
+        formName = "";
+        formDescription = null;
+        showModal = true;
+    }
+
+    void StartEdit(bool isType, ReferenceItem item)
+    {
+        isTypeTab = isType;
+        editingId = item.Id;
+        formName = item.Name;
+        formDescription = item.Description;
+        showModal = true;
+    }
+
+    async Task SaveEntity()
+    {
+        var url = isTypeTab ? $"{Navigation.BaseUri}api/references/types" : $"{Navigation.BaseUri}api/references/suppliers";
+        var body = new SaveReferenceBody { Id = editingId, Name = formName, Description = formDescription };
+        await Http.PostAsJsonAsync(url, body);
+        showModal = false;
+        await LoadData();
+    }
+
+    void CloseModal() => showModal = false;
+
+    void ConfirmDelete(bool isType, ReferenceItem item)
+    {
+        deletingIsType = isType;
+        deletingId = item.Id;
+        deletingName = item.Name;
+        showDeleteConfirm = true;
+    }
+
+    void CancelDelete() => showDeleteConfirm = false;
+
+    async Task ExecuteDelete()
+    {
+        var url = deletingIsType
+            ? $"{Navigation.BaseUri}api/references/types/{deletingId}"
+            : $"{Navigation.BaseUri}api/references/suppliers/{deletingId}";
+        await Http.DeleteAsync(url);
+        showDeleteConfirm = false;
+        await LoadData();
+    }
+
+    string FormatDate(DateTime dt) => dt.ToString("dd.MM.yyyy HH:mm");
+
+    class ReferenceItem
+    {
+        public Guid Id { get; set; }
+        public string Name { get; set; } = "";
+        public string? Description { get; set; }
+        public DateTime CreatedDate { get; set; }
+        public DateTime ModifiedDate { get; set; }
+    }
+
+    class SaveReferenceBody
+    {
+        public Guid? Id { get; set; }
+        public string Name { get; set; } = "";
+        public string? Description { get; set; }
+    }
+}

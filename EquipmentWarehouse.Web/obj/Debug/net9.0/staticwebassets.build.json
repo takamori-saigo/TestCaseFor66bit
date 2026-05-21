@@ -1,0 +1,362 @@
+{
+  "Version": 1,
+  "Hash": "+laPCBABmhCi6/7/mGNkyvVrLGEEV1aV3pMyyyOim0I=",
+  "Source": "EquipmentWarehouse.Web",
+  "BasePath": "_content/EquipmentWarehouse.Web",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "EquipmentWarehouse.Web\\wwwroot",
+      "Source": "EquipmentWarehouse.Web",
+      "ContentRoot": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\wwwroot\\",
+      "BasePath": "_content/EquipmentWarehouse.Web",
+      "Pattern": "**"
+    }
+  ],
+  "Assets": [
+    {
+      "Identity": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\obj\\Debug\\net9.0\\compressed\\m97r2rgjrb-7xe5gweu98.gz",
+      "SourceId": "EquipmentWarehouse.Web",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\obj\\Debug\\net9.0\\compressed\\",
+      "BasePath": "_content/EquipmentWarehouse.Web",
+      "RelativePath": "css/site#[.{fingerprint=7xe5gweu98}]?.css.gz",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Alternative",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\wwwroot\\css\\site.css",
+      "AssetTraitName": "Content-Encoding",
+      "AssetTraitValue": "gzip",
+      "Fingerprint": "y3lvz272x8",
+      "Integrity": "nreDfeqT2D0YM54ej8ZCpV22RP/0+RISGB3B1nip+5s=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\wwwroot\\css\\site.css"
+    },
+    {
+      "Identity": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\wwwroot\\css\\site.css",
+      "SourceId": "EquipmentWarehouse.Web",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\wwwroot\\",
+      "BasePath": "_content/EquipmentWarehouse.Web",
+      "RelativePath": "css/site#[.{fingerprint}]?.css",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "AssetMergeBehavior": "",
+      "AssetMergeSource": "",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "Fingerprint": "7xe5gweu98",
+      "Integrity": "y8pZxd2PYIg3jQk69PtMHmL6z6VUtkTF54WS1jbOyJY=",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\css\\site.css"
+    }
+  ],
+  "Endpoints": [
+    {
+      "Route": "css/site.7xe5gweu98.css",
+      "AssetFile": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\obj\\Debug\\net9.0\\compressed\\m97r2rgjrb-7xe5gweu98.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000436109900"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2292"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"nreDfeqT2D0YM54ej8ZCpV22RP/0+RISGB3B1nip+5s=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 May 2026 19:45:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"y8pZxd2PYIg3jQk69PtMHmL6z6VUtkTF54WS1jbOyJY=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "7xe5gweu98"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-y8pZxd2PYIg3jQk69PtMHmL6z6VUtkTF54WS1jbOyJY="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.7xe5gweu98.css",
+      "AssetFile": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\wwwroot\\css\\site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"y8pZxd2PYIg3jQk69PtMHmL6z6VUtkTF54WS1jbOyJY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 May 2026 19:45:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "7xe5gweu98"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-y8pZxd2PYIg3jQk69PtMHmL6z6VUtkTF54WS1jbOyJY="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.7xe5gweu98.css.gz",
+      "AssetFile": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\obj\\Debug\\net9.0\\compressed\\m97r2rgjrb-7xe5gweu98.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2292"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"nreDfeqT2D0YM54ej8ZCpV22RP/0+RISGB3B1nip+5s=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 May 2026 19:45:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "max-age=31536000, immutable"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "fingerprint",
+          "Value": "7xe5gweu98"
+        },
+        {
+          "Name": "label",
+          "Value": "css/site.css.gz"
+        },
+        {
+          "Name": "integrity",
+          "Value": "sha256-nreDfeqT2D0YM54ej8ZCpV22RP/0+RISGB3B1nip+5s="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.css",
+      "AssetFile": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\obj\\Debug\\net9.0\\compressed\\m97r2rgjrb-7xe5gweu98.gz",
+      "Selectors": [
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip",
+          "Quality": "0.000436109900"
+        }
+      ],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2292"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"nreDfeqT2D0YM54ej8ZCpV22RP/0+RISGB3B1nip+5s=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 May 2026 19:45:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "W/\"y8pZxd2PYIg3jQk69PtMHmL6z6VUtkTF54WS1jbOyJY=\""
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-y8pZxd2PYIg3jQk69PtMHmL6z6VUtkTF54WS1jbOyJY="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.css",
+      "AssetFile": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\wwwroot\\css\\site.css",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "10280"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"y8pZxd2PYIg3jQk69PtMHmL6z6VUtkTF54WS1jbOyJY=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 May 2026 19:45:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-y8pZxd2PYIg3jQk69PtMHmL6z6VUtkTF54WS1jbOyJY="
+        }
+      ]
+    },
+    {
+      "Route": "css/site.css.gz",
+      "AssetFile": "C:\\Users\\gats\\Desktop\\asp\\EquipmentWarehouse\\EquipmentWarehouse.Web\\obj\\Debug\\net9.0\\compressed\\m97r2rgjrb-7xe5gweu98.gz",
+      "Selectors": [],
+      "ResponseHeaders": [
+        {
+          "Name": "Accept-Ranges",
+          "Value": "bytes"
+        },
+        {
+          "Name": "Content-Length",
+          "Value": "2292"
+        },
+        {
+          "Name": "Content-Type",
+          "Value": "text/css"
+        },
+        {
+          "Name": "ETag",
+          "Value": "\"nreDfeqT2D0YM54ej8ZCpV22RP/0+RISGB3B1nip+5s=\""
+        },
+        {
+          "Name": "Last-Modified",
+          "Value": "Wed, 20 May 2026 19:45:53 GMT"
+        },
+        {
+          "Name": "Cache-Control",
+          "Value": "no-cache"
+        },
+        {
+          "Name": "Content-Encoding",
+          "Value": "gzip"
+        },
+        {
+          "Name": "Vary",
+          "Value": "Content-Encoding"
+        }
+      ],
+      "EndpointProperties": [
+        {
+          "Name": "integrity",
+          "Value": "sha256-nreDfeqT2D0YM54ej8ZCpV22RP/0+RISGB3B1nip+5s="
+        }
+      ]
+    }
+  ]
+}
