@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="..\build\EquipmentWarehouse.Web.props" />
-</Project>
